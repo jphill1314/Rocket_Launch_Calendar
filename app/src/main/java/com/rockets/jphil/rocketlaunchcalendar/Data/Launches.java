@@ -1,4 +1,6 @@
-package com.rockets.jphil.rocketlaunchcalendar;
+package com.rockets.jphil.rocketlaunchcalendar.Data;
+
+import com.rockets.jphil.rocketlaunchcalendar.Data.RocketLaunch;
 
 import java.util.List;
 

@@ -1,6 +1,4 @@
-package com.rockets.jphil.rocketlaunchcalendar;
-
-import android.util.Log;
+package com.rockets.jphil.rocketlaunchcalendar.Data;
 
 public class RocketLaunch {
 
@@ -33,6 +31,16 @@ public class RocketLaunch {
         this.probability = probability;
         this.changed = changed;
         this.lsp = lsp;
+    }
+
+    public RocketLaunch(int id, String name, String windowstart, String windowend, String net){
+        this.id = id;
+        this.name = name;
+        this.windowstart = windowstart;
+        this.windowend = windowend;
+        this.net = net;
+
+        setUpStrings();
     }
 
     public String getMissionName() {

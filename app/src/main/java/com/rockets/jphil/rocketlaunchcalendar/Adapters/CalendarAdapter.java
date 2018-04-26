@@ -1,10 +1,13 @@
-package com.rockets.jphil.rocketlaunchcalendar;
+package com.rockets.jphil.rocketlaunchcalendar.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.rockets.jphil.rocketlaunchcalendar.Data.RocketLaunch;
+import com.rockets.jphil.rocketlaunchcalendar.R;
 
 import java.util.ArrayList;
 
