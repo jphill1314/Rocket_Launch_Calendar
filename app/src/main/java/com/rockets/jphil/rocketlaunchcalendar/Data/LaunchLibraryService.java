@@ -1,15 +1,11 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
-import com.rockets.jphil.rocketlaunchcalendar.Data.Launches;
-
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
+import retrofit2.http.Path;
 
 public interface LaunchLibraryService {
 
-    @GET("launch")
-    Call<Launches> listLaunches(@Query("next") int numLaunches);
+    @GET("launch/next/{numLaunches}/mode/verbose")
+    Call<Launches> listLaunches(@Path("numLaunches") int numLaunches);
 }
