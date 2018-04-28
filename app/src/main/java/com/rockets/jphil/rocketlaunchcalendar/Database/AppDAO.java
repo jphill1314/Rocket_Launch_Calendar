@@ -6,8 +6,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
-import com.rockets.jphil.rocketlaunchcalendar.Data.Rocket;
-
 import java.util.List;
 
 @Dao
@@ -22,23 +20,44 @@ public interface AppDAO {
     @Query("SELECT * FROM AgencyDB")
     List<AgencyDB> getAllAgencies();
 
+    @Query("SELECT * FROM AgencyDB WHERE id = :id")
+    AgencyDB getAgencyWithID(int id);
+
     @Query("SELECT * FROM LocationDB")
     List<LocationDB> getAllLocations();
+
+    @Query("SELECT * FROM LocationDB WHERE id = :id")
+    LocationDB getLocationWithID(int id);
 
     @Query("SELECT * FROM LSPDB")
     List<LSPDB> getAllLSPs();
 
+    @Query("SELECT * FROM LSPDB WHERE id = :id")
+    LSPDB getLSPWithID(int id);
+
     @Query("SELECT * FROM MissionDB")
     List<MissionDB> getAllMissions();
+
+    @Query("SELECT * FROM MissionDB WHERE id = :id")
+    MissionDB getMissionWithID(int id);
 
     @Query("SELECT * FROM PadDB")
     List<PadDB> getAllPads();
 
+    @Query("SELECT * FROM PadDB WHERE id = :id")
+    PadDB getPadWithID(int id);
+
     @Query("SELECT * FROM PayloadDB")
     List<PayloadDB> getAllPayloads();
 
+    @Query("SELECT * FROM PayloadDB WHERE id = :id")
+    PayloadDB getPayloadWithID(int id);
+
     @Query("SELECT * FROM RocketDB")
     List<RocketDB> getAllRockets();
+
+    @Query("SELECT * FROM RocketDB WHERE id = :id")
+    RocketDB getRocketWithID(int id);
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

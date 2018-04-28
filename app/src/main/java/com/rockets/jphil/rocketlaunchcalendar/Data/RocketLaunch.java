@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class RocketLaunch {
 
@@ -43,38 +45,9 @@ public class RocketLaunch {
 
     public RocketLaunch(int id, String name, String windowstart, String windowend, String net,
                         int wssstamp, int wesstamp, int netstamp, String isostart, String isoend,
-                        String isonet, int status, int tbdtime, int tbddate, int probability,
-                        String changed) {
-        this.id = id;
-        this.name = name;
-        this.windowstart = windowstart;
-        this.windowend = windowend;
-        this.net = net;
-        this.wssstamp = wssstamp;
-        this.wesstamp = wesstamp;
-        this.netstamp = netstamp;
-        this.isostart = isostart;
-        this.isoend = isoend;
-        this.isonet = isonet;
-        this.status = status;
-        this.tbdtime = tbdtime;
-        this.tbddate = tbddate;
-        this.probability = probability;
-        this.changed = changed;
-
-        setUpStrings();
-    }
-
-    public RocketLaunch(String missionName, String missionDate, String missionTime, String rocketName,
-                        int id, String name, String windowstart, String windowend, String net,
-                        int wssstamp, int wesstamp, int netstamp, String isostart, String isoend,
                         String isonet, int status, int tbdtime, String[] vidURLs, String vidURL,
                         String[] infoURLs, String infoURL, int holdreason, int failreason, int tbddate,
                         int probability, String hashtag, String changed, Location location, Rocket rocket) {
-        this.missionName = missionName;
-        this.missionDate = missionDate;
-        this.missionTime = missionTime;
-        this.rocketName = rocketName;
         this.id = id;
         this.name = name;
         this.windowstart = windowstart;
@@ -223,10 +196,12 @@ public class RocketLaunch {
     public Date getWindowNETDate(){
 
         DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             Date date = df.parse(isonet);
             if(tbddate == 1){
                 Calendar cal = Calendar.getInstance();
+                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
                 cal.setTime(date);
                 cal.add(Calendar.MONTH, 1);
                 cal.set(Calendar.DATE, 1);
@@ -244,7 +219,7 @@ public class RocketLaunch {
         missionName = name.substring(name.indexOf("|") + 2).trim();
 
         if(tbddate == 1) {
-            missionDate = net.substring(0, net.indexOf(",") - 2).trim() + " TBA";
+            missionDate = net.substring(0, net.indexOf(",") - 2).trim();
         }
         else {
             missionDate = net.substring(0, net.indexOf(",")).trim();
@@ -254,7 +229,9 @@ public class RocketLaunch {
             missionTime = "TBA";
         }
         else {
-            missionTime = net.substring(net.indexOf(",") + 6).trim();
+            //DateFormat df = DateFormat.getTimeInstance();
+            DateFormat df = new SimpleDateFormat("HH:mm a", Locale.getDefault());
+            missionTime = df.format(getWindowNETDate());
         }
     }
 }

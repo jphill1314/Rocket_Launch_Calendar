@@ -3,6 +3,9 @@ package com.rockets.jphil.rocketlaunchcalendar.Database;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.rockets.jphil.rocketlaunchcalendar.Data.Agency;
+import com.rockets.jphil.rocketlaunchcalendar.Data.Pad;
+
 @Entity
 public class PadDB {
 
@@ -16,4 +19,8 @@ public class PadDB {
     public double longitude;
 
     public String agencies;
+
+    public Pad getPad(Agency[] agencies){
+        return new Pad(id, name, infoURL, wikiURL, mapURL, latitude, longitude, agencies);
+    }
 }
