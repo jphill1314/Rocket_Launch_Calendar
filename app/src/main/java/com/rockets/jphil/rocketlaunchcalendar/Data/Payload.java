@@ -1,5 +1,7 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
+import com.rockets.jphil.rocketlaunchcalendar.Database.PayloadDB;
+
 public class Payload {
 
     private int id;
@@ -16,5 +18,14 @@ public class Payload {
 
     public String getName() {
         return name;
+    }
+
+    public PayloadDB getEntity(){
+        PayloadDB db = new PayloadDB();
+
+        db.id = id;
+        db.name = name;
+
+        return db;
     }
 }

@@ -1,5 +1,7 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
+import com.rockets.jphil.rocketlaunchcalendar.Database.LSPDB;
+
 public class LSP {
 
     private int id;
@@ -58,5 +60,27 @@ public class LSP {
 
     public String[] getInfoURLs() {
         return infoURLs;
+    }
+
+    public LSPDB getEntity(){
+        LSPDB db = new LSPDB();
+
+        db.id = id;
+        db.name = name;
+        db.abbrev = abbrev;
+        db.countryCode = countryCode;
+        db.type = type;
+        db.infoURL = infoURL;
+        db.wikiURL = wikiURL;
+        db.changed = changed;
+        db.infoURLs = "";
+
+        if(infoURLs != null) {
+            for (String s : infoURLs) {
+                db.infoURLs += s + " ";
+            }
+        }
+
+        return db;
     }
 }

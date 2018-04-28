@@ -2,11 +2,14 @@ package com.rockets.jphil.rocketlaunchcalendar.Data;
 
 import android.util.Log;
 
+import com.rockets.jphil.rocketlaunchcalendar.Database.RocketLaunchDB;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -42,12 +45,15 @@ public class RocketLaunch {
     private String changed;
     private Location location;
     private Rocket rocket;
+    private Mission[] missions;
+    private LSP lsp;
 
     public RocketLaunch(int id, String name, String windowstart, String windowend, String net,
                         int wssstamp, int wesstamp, int netstamp, String isostart, String isoend,
                         String isonet, int status, int tbdtime, String[] vidURLs, String vidURL,
                         String[] infoURLs, String infoURL, int holdreason, int failreason, int tbddate,
-                        int probability, String hashtag, String changed, Location location, Rocket rocket) {
+                        int probability, String hashtag, String changed, Location location,
+                        Rocket rocket, Mission[] missions, LSP lsp) {
         this.id = id;
         this.name = name;
         this.windowstart = windowstart;
@@ -73,6 +79,8 @@ public class RocketLaunch {
         this.changed = changed;
         this.location = location;
         this.rocket = rocket;
+        this.missions = missions;
+        this.lsp = lsp;
 
         setUpStrings();
     }
@@ -193,6 +201,14 @@ public class RocketLaunch {
         return rocket;
     }
 
+    public Mission[] getMissions() {
+        return missions;
+    }
+
+    public LSP getLsp() {
+        return lsp;
+    }
+
     public Date getWindowNETDate(){
 
         DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
@@ -233,5 +249,58 @@ public class RocketLaunch {
             DateFormat df = new SimpleDateFormat("HH:mm a", Locale.getDefault());
             missionTime = df.format(getWindowNETDate());
         }
+    }
+
+    public RocketLaunchDB getEntity(){
+        RocketLaunchDB db = new RocketLaunchDB();
+
+        db.id = id;
+        db.name = name;
+        db.windowstart = windowstart;
+        db.windowend = windowend;
+        db.net = net;
+        db.wssstamp = wssstamp;
+        db.wesstamp = wesstamp;
+        db.netstamp = netstamp;
+        db.isostart = isostart;
+        db.isoend = isoend;
+        db.isonet = isonet;
+        db.status = status;
+        db.tbdtime = tbdtime;
+        db.vidURLs = "";
+        if(vidURLs != null) {
+            for (String s : vidURLs) {
+                db.vidURLs += s + " ";
+            }
+        }
+
+        db.vidURL = vidURL;
+        db.infoURLs = "";
+        if(infoURLs != null) {
+            for (String s : infoURLs) {
+                db.infoURLs += s + " ";
+            }
+        }
+
+        db.infoURL = infoURL;
+        db.holdreason = holdreason;
+        db.failreason = failreason;
+        db.tbddate = tbddate;
+        db.probability = probability;
+        db.hashtag = hashtag;
+        db.changed = changed;
+        db.locationID = location.getId();
+        db.rocket = rocket.getId();
+
+        db.missions = "";
+        if(missions != null) {
+            for (Mission m : missions) {
+                db.missions += m.getId() + ",";
+            }
+        }
+
+        db.lsp = (lsp != null) ? lsp.getId() : -1;
+
+        return db;
     }
 }

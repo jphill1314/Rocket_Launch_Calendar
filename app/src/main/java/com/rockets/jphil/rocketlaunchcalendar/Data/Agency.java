@@ -1,6 +1,6 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
-import com.google.gson.annotations.SerializedName;
+import com.rockets.jphil.rocketlaunchcalendar.Database.AgencyDB;
 
 public class Agency {
 
@@ -12,14 +12,9 @@ public class Agency {
     private String infoURL;
     private String wikiURL;
     private String changed;
-    private String[] infoURLs;
-    private String[] wikiURLs;
-    private String imageURL;
-    private int[] imageSizes;
+    private String infoURLs[];
 
-    public Agency(int id, String name, String abbrev, String countryCode, int type, String infoURL,
-                  String wikiURL, String changed, String[] infoURLs, String[] wikiURLs,
-                  String imageURL, int[] imageSizes) {
+    public Agency(int id, String name, String abbrev, String countryCode, int type, String infoURL, String wikiURL, String changed, String[] infoURLs) {
         this.id = id;
         this.name = name;
         this.abbrev = abbrev;
@@ -29,9 +24,6 @@ public class Agency {
         this.wikiURL = wikiURL;
         this.changed = changed;
         this.infoURLs = infoURLs;
-        this.wikiURLs = wikiURLs;
-        this.imageURL = imageURL;
-        this.imageSizes = imageSizes;
     }
 
     public int getId() {
@@ -70,15 +62,25 @@ public class Agency {
         return infoURLs;
     }
 
-    public String[] getWikiURLs() {
-        return wikiURLs;
-    }
+    public AgencyDB getEntity(){
+        AgencyDB db = new AgencyDB();
 
-    public String getImageURL() {
-        return imageURL;
-    }
+        db.id = id;
+        db.name = name;
+        db.abbrev = abbrev;
+        db.countryCode = countryCode;
+        db.type = type;
+        db.infoURL = infoURL;
+        db.wikiURL = wikiURL;
+        db.changed = changed;
+        db.infoURLs = "";
 
-    public int[] getImageSizes() {
-        return imageSizes;
+        if(infoURLs != null) {
+            for (String s : infoURLs) {
+                db.infoURLs += s + " ";
+            }
+        }
+
+        return db;
     }
 }

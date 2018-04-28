@@ -28,11 +28,6 @@ public class Launches {
         sortLaunchesByDate();
     }
 
-//    public Launches(ArrayList<RocketLaunch> launches){
-//        this.launches = launches;
-//        sortLaunchesByDate();
-//    }
-
     public ArrayList<RocketLaunch> getLaunches() {
         return launches;
     }
@@ -75,9 +70,5 @@ public class Launches {
                 }
             }
         }while (changes != 0);
-
-        for(RocketLaunch L : launches){
-            Log.d("Sort", L.getName() + " date: " + L.getWindowNETDate().toString());
-        }
     }
 }

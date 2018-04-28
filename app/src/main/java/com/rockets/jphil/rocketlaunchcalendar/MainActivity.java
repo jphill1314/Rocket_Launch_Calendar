@@ -1,6 +1,5 @@
 package com.rockets.jphil.rocketlaunchcalendar;
 
-import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,11 +7,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rockets.jphil.rocketlaunchcalendar.Adapters.CalendarAdapter;
 import com.rockets.jphil.rocketlaunchcalendar.Data.Agency;
 import com.rockets.jphil.rocketlaunchcalendar.Data.IntTypeAdapter;
 import com.rockets.jphil.rocketlaunchcalendar.Data.LSP;
@@ -62,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.frame_layout, new CalendarFragment()).commit();
     }
 
+
+    // TODO: it appears that missions and LSPs aren't being saved at all -> ie they don't exist after the network call
     private class DataAsync extends AsyncTask<String, String, String> {
 
         private AppDatabase database;
@@ -151,263 +150,57 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<AgencyDB> agencies = new ArrayList<>();
 
             for(RocketLaunch launch : launches){
-                RocketLaunchDB rocketLaunchDB = new RocketLaunchDB();
-                rocketLaunchDB.id = launch.getId();
-                rocketLaunchDB.name = launch.getName();
-                rocketLaunchDB.windowstart = launch.getWindowstart();
-                rocketLaunchDB.windowend = launch.getWindowend();
-                rocketLaunchDB.net = launch.getNet();
-                rocketLaunchDB.wssstamp = launch.getWssstamp();
-                rocketLaunchDB.wesstamp = launch.getWesstamp();
-                rocketLaunchDB.isostart = launch.getIsostart();
-                rocketLaunchDB.isoend = launch.getIsoend();
-                rocketLaunchDB.isonet = launch.getIsonet();
-                rocketLaunchDB.status = launch.getStatus();
-                rocketLaunchDB.tbdtime = launch.getTbdtime();
-                rocketLaunchDB.tbddate = launch.getTbddate();
-                rocketLaunchDB.probability = launch.getProbability();
-
-                rocketLaunchDB.vidURL = launch.getVidURL();
-                if(launch.getVidURLs() != null){
-                    String urls = "";
-                    for(String url : launch.getVidURLs()){
-                        urls += url + " ";
-                    }
-                    urls = urls.trim();
-                    rocketLaunchDB.vidURLs = urls;
-                }
-
-                rocketLaunchDB.infoURL = launch.getInfoURL();
-                if(launch.getInfoURLs() != null){
-                    String urls = "";
-                    for(String url : launch.getInfoURLs()){
-                        urls += url + " ";
-                    }
-                    urls = urls.trim();
-                    rocketLaunchDB.infoURLs = urls;
-                }
-
-                rocketLaunchDB.holdreason = launch.getHoldreason();
-                rocketLaunchDB.failreason = launch.getFailreason();
-                rocketLaunchDB.hashtag = launch.getHashtag();
-
-                if(launch.getLocation() != null){
-                    rocketLaunchDB.locationID = launch.getLocation().getId();
-
-                    Location l = launch.getLocation();
-                    LocationDB locationDB = new LocationDB();
-                    locationDB.id = l.getId();
-                    locationDB.name = l.getName();
-                    locationDB.infoURL = l.getInfoURL();
-                    locationDB.wikiURL = l.getWikiURL();
-                    locationDB.countryCode = l.getCountryCode();
-
-                    if(l.getPads() != null){
-                        String padIds = "";
-                        for(Pad p : l.getPads()){
-                            padIds += p.getId() + ",";
-
-                            PadDB padDB = new PadDB();
-                            padDB.id = p.getId();
-                            padDB.name = p.getName();
-                            padDB.infoURL = p.getInfoURL();
-                            padDB.wikiURL = p.getWikiURL();
-                            padDB.mapURL = p.getMapURL();
-                            padDB.latitude = p.getLatitude();
-                            padDB.longitude = p.getLongitude();
-
-                            if(p.getAgencies() != null){
-                                String agIDs = "";
-                                for(Agency a : p.getAgencies()){
-                                    agIDs += a.getId() + ",";
-
-                                    AgencyDB agencyDB = new AgencyDB();
-                                    agencyDB.id = a.getId();
-                                    agencyDB.abbrev = a.getAbbrev();
-                                    agencyDB.countryCode = a.getCountryCode();
-                                    agencyDB.type = a.getType();
-                                    agencyDB.infoURL = a.getInfoURL();
-                                    agencyDB.wikiURL = a.getWikiURL();
-                                    agencyDB.changed = a.getChanged();
-                                    agencyDB.infoURLs = "";
-                                    if(a.getInfoURLs() != null) {
-                                        for (String s : a.getInfoURLs()) {
-                                            agencyDB.infoURLs += s + " ";
-                                        }
-                                    }
-                                    agencyDB.wikiURLs = "";
-                                    if(a.getWikiURLs() != null) {
-                                        for (String s : a.getWikiURLs()) {
-                                            agencyDB.wikiURLs += s + " ";
-                                        }
-                                    }
-
-                                    agencyDB.imageURL = a.getImageURL();
-                                    agencyDB.imageSizes = "";
-                                    if(a.getImageSizes() != null) {
-                                        for (int i : a.getImageSizes()) {
-                                            agencyDB.imageSizes += i + ",";
-                                        }
-                                    }
-
-                                    agencies.add(agencyDB);
-                                }
-                                padDB.agencies = agIDs;
-                            }
-                            pads.add(padDB);
-                        }
-
-                        locationDB.pads = padIds.substring(0, padIds.lastIndexOf(',')-1);
-                    }
-                    locations.add(locationDB);
-                }
+                launchDBS.add(launch.getEntity());
 
                 if(launch.getRocket() != null){
-                    rocketLaunchDB.rocket = launch.getRocket().getId();
-
                     Rocket r = launch.getRocket();
-                    RocketDB rocket = new RocketDB();
-                    rocket.id = r.getId();
-                    rocket.name = r.getName();
-                    rocket.configuration = r.getConfiguration();
-                    rocket.familyname = r.getFamilyname();
+                    rockets.add(r.getEntity());
 
                     if(r.getAgencies() != null){
-                        String agIDs = "";
                         for(Agency a : r.getAgencies()){
-                            agIDs += a.getId() + ",";
-
-                            AgencyDB agencyDB = new AgencyDB();
-                            agencyDB.id = a.getId();
-                            agencyDB.abbrev = a.getAbbrev();
-                            agencyDB.countryCode = a.getCountryCode();
-                            agencyDB.type = a.getType();
-                            agencyDB.infoURL = a.getInfoURL();
-                            agencyDB.wikiURL = a.getWikiURL();
-                            agencyDB.changed = a.getChanged();
-                            agencyDB.infoURLs = "";
-                            if(a.getInfoURLs() != null) {
-                                for (String s : a.getInfoURLs()) {
-                                    agencyDB.infoURLs += s + " ";
-                                }
-                            }
-                            agencyDB.wikiURLs = "";
-                            if(a.getWikiURLs() != null) {
-                                for (String s : a.getWikiURLs()) {
-                                    agencyDB.wikiURLs += s + " ";
-                                }
-                            }
-
-                            agencyDB.imageURL = a.getImageURL();
-                            agencyDB.imageSizes = "";
-                            if(a.getImageSizes() != null) {
-                                for (int i : a.getImageSizes()) {
-                                    agencyDB.imageSizes += i + ",";
-                                }
-                            }
-
-                            agencies.add(agencyDB);
+                            agencies.add(a.getEntity());
                         }
-                        rocket.agencies = (agIDs.contains(",")) ? agIDs.substring(0, agIDs.lastIndexOf(",")-1) : rocket.agencies;
                     }
-
-                    if(r.getMissions() != null){
-                        String missionIds = "";
-                        for(Mission m : r.getMissions()){
-                            missionIds += m.getId() + ",";
-
-                            MissionDB mission = new MissionDB();
-                            mission.id = m.getId();
-                            mission.name = m.getName();
-                            mission.description = m.getDescription();
-                            mission.type = m.getType();
-                            mission.wikiURL = m.getWikiURL();
-                            mission.typeName = m.getTypeName();
-
-                            if(m.getPayloads() != null){
-                                String payLoadIds = "";
-                                for(Payload p: m.getPayloads()){
-                                    payLoadIds += p.getId() + ",";
-
-                                    PayloadDB payload = new PayloadDB();
-                                    payload.id = p.getId();
-                                    payload.name = p.getName();
-
-                                    payloads.add(payload);
-                                }
-                                mission.payloads = payLoadIds.substring(0, payLoadIds.lastIndexOf(',')-1);
-                            }
-
-                            if(m.getAgencies() != null){
-                                String agIDs = "";
-                                for(Agency a : m.getAgencies()){
-                                    agIDs += a.getId() + ",";
-
-                                    AgencyDB agencyDB = new AgencyDB();
-                                    agencyDB.id = a.getId();
-                                    agencyDB.abbrev = a.getAbbrev();
-                                    agencyDB.countryCode = a.getCountryCode();
-                                    agencyDB.type = a.getType();
-                                    agencyDB.infoURL = a.getInfoURL();
-                                    agencyDB.wikiURL = a.getWikiURL();
-                                    agencyDB.changed = a.getChanged();
-                                    agencyDB.infoURLs = "";
-                                    for(String s: a.getInfoURLs()){
-                                        agencyDB.infoURLs += s + " ";
-                                    }
-                                    agencyDB.infoURLs = agencyDB.infoURLs.trim();
-
-                                    agencyDB.wikiURLs = "";
-                                    for(String s : a.getWikiURLs()){
-                                        agencyDB.wikiURLs += s + " ";
-                                    }
-                                    agencyDB.wikiURLs = agencyDB.wikiURLs.trim();
-
-                                    agencyDB.imageURL = a.getImageURL();
-                                    agencyDB.imageSizes = "";
-                                    for(int i: a.getImageSizes()){
-                                        agencyDB.imageSizes += i + ",";
-                                    }
-                                    agencyDB.imageSizes = agencyDB.imageSizes.trim();
-
-                                    agencies.add(agencyDB);
-                                }
-                                mission.agencies = agIDs.substring(0, agIDs.lastIndexOf(',')-1);
-                            }
-                            missions.add(mission);
-                        }
-                        rocket.missions = missionIds;
-                    }
-
-                    if(r.getLsp() != null) {
-                        rocket.lsp = r.getLsp().getId();
-
-                        LSP lsp = r.getLsp();
-                        LSPDB lspdb = new LSPDB();
-                        lspdb.id = lsp.getId();
-                        lspdb.name = lsp.getName();
-                        lspdb.abbrev = lsp.getAbbrev();
-                        lspdb.countryCode = lsp.getCountryCode();
-                        lspdb.type = lsp.getType();
-                        lspdb.infoURL = lsp.getInfoURL();
-                        lspdb.wikiURL = lsp.getWikiURL();
-                        lspdb.changed = lsp.getChanged();
-
-                        if (lsp.getInfoURLs() != null) {
-                            lspdb.infoURLs = "";
-                            for (String url : lsp.getInfoURLs()) {
-                                lspdb.infoURLs += url + " ";
-                            }
-                            lspdb.infoURLs = lspdb.infoURLs.trim();
-                        }
-
-                        lsps.add(lspdb);
-                    }
-                    rockets.add(rocket);
                 }
 
+                if(launch.getLocation() != null){
+                    Location l = launch.getLocation();
+                    locations.add(l.getEntity());
 
-                launchDBS.add(rocketLaunchDB);
+                    if(l.getPads() != null){
+                        for(Pad p : l.getPads()){
+                            pads.add(p.getEntity());
+
+                            if(p.getAgencies() != null){
+                                for(Agency a : p.getAgencies()){
+                                    agencies.add(a.getEntity());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(launch.getLsp() != null){
+                    lsps.add(launch.getLsp().getEntity());
+                }
+
+                if(launch.getMissions() != null){
+                    for(Mission m : launch.getMissions()){
+                        missions.add(m.getEntity());
+
+                        if(m.getPayloads() != null){
+                            for(Payload p : m.getPayloads()){
+                                payloads.add(p.getEntity());
+                            }
+                        }
+
+                        if(m.getAgencies() != null){
+                            for(Agency a : m.getAgencies()){
+                                agencies.add(a.getEntity());
+                            }
+                        }
+                    }
+                }
             }
 
             database.appDAO().insertLaunches(launchDBS);
@@ -441,8 +234,6 @@ public class MainActivity extends AppCompatActivity {
                 agencies.add(db.getAgency());
             }
 
-            // TODO: load all data from database
-
             for(RocketLaunchDB db: launchDBS){
                 String[] vidURLS = (db.vidURLs != null) ? db.vidURLs.split(" ") : null;
                 String[] infoURLS = (db.infoURLs != null) ? db.infoURLs.split(" ") : null;
@@ -457,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                         int id = Integer.parseInt(s);
                         PadDB padDB = database.appDAO().getPadWithID(id);
                         if(padDB != null) {
-                            String[] aIDs = (padDB.agencies != null) ? padDB.agencies.split(",") : null;
+                            String[] aIDs = (padDB.agencies != null && padDB.agencies.length() > 0) ? padDB.agencies.split(",") : null;
                             Agency[] padAgencies = (aIDs != null) ? new Agency[aIDs.length] : null;
                             if (aIDs != null) {
                                 int aIndex = 0;
@@ -486,85 +277,90 @@ public class MainActivity extends AppCompatActivity {
                 RocketDB rocketDB = database.appDAO().getRocketWithID(db.rocket);
                 Agency[] rAgencies = null;
                 Mission[] missions = null;
-                LSP lsp = null;
 
                 if(rocketDB != null){
-                    for(LSP l: lsps){
-                        if(l.getId() == rocketDB.lsp){
-                            lsp = l;
-                        }
-                    }
 
                     if(rocketDB.agencies != null){
-                        String[] ids = rocketDB.agencies.split(",");
-                        rAgencies = new Agency[ids.length];
-                        int index = 0;
-                        for(String s : ids){
-                            int id = Integer.parseInt(s);
-                            for(Agency a : agencies){
-                                if(a.getId() == id && index < rAgencies.length){
-                                    rAgencies[index] = a;
-                                    index++;
+                        String[] ids = (rocketDB.agencies.length() > 0) ? rocketDB.agencies.split(",") : null;
+                        rAgencies = (ids != null) ? new Agency[ids.length] : null;
+
+                        if(rAgencies != null) {
+                            int index = 0;
+                            for (String s : ids) {
+                                int id = Integer.parseInt(s);
+                                for (Agency a : agencies) {
+                                    if (a.getId() == id && index < rAgencies.length) {
+                                        rAgencies[index] = a;
+                                        index++;
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if(rocketDB.missions != null){
-                        String[] ids = rocketDB.missions.split(",");
-                        missions = new Mission[ids.length];
-                        int index = 0;
-                        for(String s : ids){
-                            MissionDB missionDB = database.appDAO().getMissionWithID(Integer.parseInt(s));
-                            Payload[] mPayloads = null;
-                            Agency[] mAgencies = null;
-
-                            if(missionDB.agencies != null){
-                                String[] aIds = missionDB.agencies.split(",");
-                                mAgencies = new Agency[aIds.length];
-                                int aIndex = 0;
-
-                                for(String string : aIds){
-                                    int aID = Integer.parseInt(string);
-                                    for(Agency a : agencies){
-                                        if(a.getId() == aID && aIndex < mAgencies.length){
-                                            mAgencies[aIndex] = a;
-                                            aIndex++;
-                                        }
-                                    }
-                                }
-                            }
-
-                            if(missionDB.payloads != null){
-                                String[] pIds = missionDB.payloads.split(",");
-                                mPayloads = new Payload[pIds.length];
-                                int pIndex = 0;
-
-                                for(String string : pIds){
-                                    int pId = Integer.parseInt(string);
-                                    for(Payload p : payloads){
-                                        if(p.getId() == pId && pIndex < mPayloads.length){
-                                            mPayloads[pIndex] = p;
-                                            pIndex++;
-                                        }
-                                    }
-                                }
-                            }
-
-                            missions[index] = missionDB.getMission(mPayloads, mAgencies);
-                            index++;
-                        }
-                    }
                 }
 
 
-                Rocket rocket = rocketDB.getRocket(rAgencies, missions, lsp);
+                Rocket rocket = rocketDB.getRocket(rAgencies);
+                LSP lsp = null;
+
+                for(LSP l : lsps){
+                    if(db.lsp == l.getId()){
+                        lsp = l;
+                    }
+                }
+
+                if(db.missions != null && db.missions.length() > 0){
+                    String[] ids = db.missions.split(",");
+                    missions = new Mission[ids.length];
+                    int index = 0;
+                    for(String s : ids){
+                        MissionDB missionDB = database.appDAO().getMissionWithID(Integer.parseInt(s));
+                        Payload[] mPayloads = null;
+                        Agency[] mAgencies = null;
+
+                        if(missionDB.agencies != null && missionDB.agencies.length() > 0){
+                            String[] aIds = missionDB.agencies.split(",");
+                            mAgencies = new Agency[aIds.length];
+                            int aIndex = 0;
+
+                            for(String string : aIds){
+                                int aID = Integer.parseInt(string);
+                                for(Agency a : agencies){
+                                    if(a.getId() == aID && aIndex < mAgencies.length){
+                                        mAgencies[aIndex] = a;
+                                        aIndex++;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(missionDB.payloads != null && missionDB.payloads.length() > 0){
+                            String[] pIds = missionDB.payloads.split(",");
+                            mPayloads = new Payload[pIds.length];
+                            int pIndex = 0;
+
+                            for(String string : pIds){
+                                int pId = Integer.parseInt(string);
+                                for(Payload p : payloads){
+                                    if(p.getId() == pId && pIndex < mPayloads.length){
+                                        mPayloads[pIndex] = p;
+                                        pIndex++;
+                                    }
+                                }
+                            }
+                        }
+
+                        missions[index] = missionDB.getMission(mPayloads, mAgencies);
+                        index++;
+                    }
+                }
 
                 rocketLaunches.add(new RocketLaunch(db.id, db.name, db.windowstart, db.windowend, db.net,
                         db.wssstamp, db.wesstamp, db.netstamp, db.isostart, db.isoend, db.isonet,
                         db.status, db.tbdtime, vidURLS, db.vidURL, infoURLS, db.infoURL,
                         db.holdreason, db.failreason, db.tbddate, db.probability, db.hashtag,
-                        db.changed, location, rocket));
+                        db.changed, location, rocket, missions, lsp));
             }
 
             Log.d("Load", "init Launches: " + rocketLaunches.size());

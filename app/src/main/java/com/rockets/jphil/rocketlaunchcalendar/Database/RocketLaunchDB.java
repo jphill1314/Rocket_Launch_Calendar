@@ -33,4 +33,6 @@ public class RocketLaunchDB {
     public String changed;
     public int locationID;
     public int rocket;
+    public String missions;
+    public int lsp;
 }

@@ -1,5 +1,7 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
+import com.rockets.jphil.rocketlaunchcalendar.Database.PadDB;
+
 public class Pad {
 
     private int id;
@@ -52,5 +54,25 @@ public class Pad {
 
     public Agency[] getAgencies() {
         return agencies;
+    }
+
+    public PadDB getEntity(){
+        PadDB db = new PadDB();
+
+        db.id = id;
+        db.name = name;
+        db.infoURL = infoURL;
+        db.wikiURL = wikiURL;
+        db.mapURL = mapURL;
+        db.latitude = latitude;
+        db.longitude = longitude;
+        db.agencies = "";
+        if(agencies != null) {
+            for (Agency a : agencies) {
+                db.agencies += a.getId() + ",";
+            }
+        }
+
+        return db;
     }
 }

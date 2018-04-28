@@ -1,5 +1,7 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
+import com.rockets.jphil.rocketlaunchcalendar.Database.LocationDB;
+
 public class Location {
 
     private Pad[] pads;
@@ -40,5 +42,22 @@ public class Location {
 
     public String getCountryCode() {
         return countryCode;
+    }
+
+    public LocationDB getEntity(){
+        LocationDB db = new LocationDB();
+
+        db.pads = "";
+        for(Pad p : pads){
+            db.pads += p.getId() + ",";
+        }
+
+        db.id = id;
+        db.name = name;
+        db.infoURL = infoURL;
+        db.wikiURL = wikiURL;
+        db.countryCode = countryCode;
+
+        return db;
     }
 }

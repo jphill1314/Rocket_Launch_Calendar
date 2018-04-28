@@ -1,5 +1,7 @@
 package com.rockets.jphil.rocketlaunchcalendar.Data;
 
+import com.rockets.jphil.rocketlaunchcalendar.Database.MissionDB;
+
 public class Mission {
 
     private int id;
@@ -53,5 +55,31 @@ public class Mission {
 
     public Payload[] getPayloads() {
         return payloads;
+    }
+
+    public MissionDB getEntity(){
+        MissionDB db = new MissionDB();
+
+        db.id = id;
+        db.name = name;
+        db.description = description;
+        db.type = type;
+        db.wikiURL = wikiURL;
+        db.typeName = typeName;
+        db.payloads = "";
+        if(payloads != null) {
+            for (Payload p : payloads) {
+                db.payloads += p.getId() + ",";
+            }
+        }
+
+        db.agencies = "";
+        if(agencies != null) {
+            for (Agency a : agencies) {
+                db.agencies += a.getId() + ",";
+            }
+        }
+
+        return db;
     }
 }
